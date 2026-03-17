@@ -24,7 +24,7 @@ def Menu():
     print("|  GESTOR DE CITAS  |")
     print("--------------------")
 
-    print("1.Agregar Cita2.""
+    print("1.Agregar Cita\n2.""
 
 
     def Agrear_cita(self):
