@@ -19,6 +19,13 @@ class Agenda:
     def __init__(self):
         self.cabeza= None
 
+def Menu():
+    print("--------------------")
+    print("|  GESTOR DE CITAS  |")
+    print("--------------------")
+
+    print("1.Agregar Cita\n""
+
 
     def Agrear_cita(self):
         pass
