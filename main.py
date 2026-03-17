@@ -8,11 +8,12 @@ class Nodo:
 
 
 class Cita:
-    def __init__(self,nombre_paciente,fecha_hora,nombre_medico,tipo_consulta):
+    def __init__(self,nombre_paciente,fecha_hora,nombre_medico,tipo_consulta,estado):
         self.nombre_paciente= nombre_paciente
         self.fecha_hora= fecha_hora
         self.nombre_medico= nombre_medico
         self.tipo_consulta= tipo_consulta
+        self.estado= estado
 
 class Agenda:
     def __init__(self):
