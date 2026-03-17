@@ -49,6 +49,58 @@ class Agenda:
         nueva_cita.siguiente= self.cabeza
         ultimo.siguiente= nueva_cita
 
+    def Eliminar_cita(self, fecha_hora, ord = None):
+        if self.cabeza is None:
+            print("No hay citas pendientes")
+            return
+
+        if self.cabeza.dato.fecha_hora == fecha_hora:
+            self.cabeza = None
+            print("Cita atendida")
+
+        actual = self.cabeza
+        found = False
+        while actual.siguiente != self.cabeza:
+            if actual.siguiente.dato.fecha_hora == fecha_hora:
+                found = True
+                break
+            actual = actual.siguiente
+
+        if found:
+            prev = actual.anterior
+            nxt = actual.siguiente
+            prev.siguiente = actual
+            nxt.anterior = actual
+            print(f"cita con fecha {fecha_hora} eliminada")
+            return
+        print("No se encontró cita con esa fecha")
+        return
+
+
+    def Mostrar_agenda(self, ord = None):
+        if self.cabeza is None:
+            print("No hay citas pendientes")
+            return
+
+        actual = self.cabeza
+        if ord and ord == -1:
+            while True:
+                print(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}", end="")
+                actual = actual.anterior
+                if actual != self.cabeza:
+                    print(end = " -> ")
+                if actual.anterior == self.cabeza.anterior:
+                    break
+            return
+
+        while True:
+            print(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}",end="")
+            actual = actual.siguiente
+            if actual != self.cabeza:
+                print(end=" -> ")
+            if actual.siguiente == self.cabeza.siguiente:
+                break
+        return
     def Eliminar_cita(self):
         pass
 
