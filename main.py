@@ -20,12 +20,12 @@ class Nodo:
 
 
 class Cita:
-    def __init__(self,nombre_paciente,fecha_hora,nombre_medico,tipo_consulta):
+    def __init__(self,nombre_paciente,fecha_hora,nombre_medico,tipo_consulta, estado):
         self.nombre_paciente= nombre_paciente
         self.fecha_hora= fecha_hora
         self.nombre_medico= nombre_medico
         self.tipo_consulta= tipo_consulta
-        self.estado= ""
+        self.estado= estado
 
 class Agenda:
     def __init__(self):
@@ -85,7 +85,14 @@ class Agenda:
         actual = self.cabeza
         if ord and ord == -1:
             while True:
-                print(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}", end="")
+                c_time, hoy = None, None
+                try:
+                    hoy = datetime.today().date()
+                    c_time = datetime.strftime(actual.dato.fecha_hora, "YYYY-MM-DD")
+                except:
+                    pass
+                if c_time and hoy and c_time == hoy:
+                    print(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}", end="")
                 actual = actual.anterior
                 if actual != self.cabeza:
                     print(end = " -> ")
@@ -94,23 +101,35 @@ class Agenda:
             return
 
         while True:
-            print(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}",end="")
+            c_time, hoy = None, None
+            try:
+                hoy = datetime.today().date()
+                c_time = datetime.strftime(actual.dato.fecha_hora, "YYYY-MM-DD")
+            except:
+                pass
+            if c_time and hoy and c_time == hoy:
+                print(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}",end="")
             actual = actual.siguiente
             if actual != self.cabeza:
                 print(end=" -> ")
             if actual.siguiente == self.cabeza.siguiente:
                 break
         return
-    def Eliminar_cita(self):
-        pass
 
-    def Mostrar_agenda(self):
-        pass
+    def buscar_cita(self, crit, s_val): pass #crit es el criterio de búsqueda (fecha u hora), s_val es la entrada (formato YYYY-MM-DD o HH:MM)
+
+
+    def atender_cita(self, c_time): pass
+
+    def generar_reporte(self, dia): pass
+
+
+
 
 Lista= Agenda()
 while True:
     print("---SELECCIONE EL TIPO DE RECORRIDO DE LA AGENDA---")
-    print("1.Cabeza y Cola\n2.Cola y Anterior")
+    print("1.Cabeza y Siguiente\n2.Cola y Anterior")
     option= input("Ingrese una opcion:")
 
     match option:
