@@ -1,5 +1,5 @@
 #Agenda de Citas con Listas Enlazadas Circulares
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def Menu():
@@ -7,7 +7,7 @@ def Menu():
     print("|  GESTOR DE CITAS  |")
     print("--------------------")
 
-    print("1.Agregar Cita.\n2.Eliminar Cita.\3.Mostrar Agenda.\n4.Buscar cita.\n5.Editar cita\n\n6.Generar reporte\n7.Salir")
+    print("1.Agregar Cita.\n2.Eliminar Cita.\n3.Mostrar Agenda.\n4.Buscar cita.\n5.Editar cita\n6.Generar reporte\n7.Salir")
 
     print("---" * 30)
 
@@ -39,6 +39,7 @@ class Agenda:
 
     def Agrear_cita(self,cita, rev = None):
         nueva_cita = Nodo(cita)
+        nueva_fecha = nueva_cita.dato.fecha_hora
 
         if self.cabeza is None:
             print("No hay citas...Agregar primera cita")
@@ -50,6 +51,12 @@ class Agenda:
 
         if rev and rev == -1:
             while ultimo.anterior != self.cabeza:
+                diferencia = abs(ultimo.dato.fecha_hora -   nueva_fecha)
+                if diferencia < timedelta(hours=2):
+                    print(f"\n[!] ERROR: Conflicto de horario.")
+                    print(f"Ya existe una cita a las {ultimo.dato.fecha_hora.strftime('%H:%M')}.")
+                    print("Debe haber un espacio de al menos 2 horas entre citas.")
+                    return
                 ultimo = ultimo.anterior
             nueva_cita.siguiente = ultimo
             self.cabeza.siguiente = nueva_cita
@@ -57,6 +64,12 @@ class Agenda:
             nueva_cita.anterior = self.cabeza
 
         while ultimo.siguiente != self.cabeza:
+            diferencia = abs(ultimo.dato.fecha_hora - nueva_fecha)
+            if diferencia < timedelta(hours=2):
+                print(f"\n[!] ERROR: Conflicto de horario.")
+                print(f"Ya existe una cita a las {ultimo.dato.fecha_hora.strftime('%H:%M')}.")
+                print("Debe haber un espacio de al menos 2 horas entre citas.")
+                return
             ultimo = ultimo.siguiente
 
         nueva_cita.siguiente= self.cabeza
@@ -253,15 +266,20 @@ while True:
             match opcion:
                 case "1":
                     print("----AGREGAR CITA---")
-                    nombre = input("Ingrese nombre del paciente:")
-                    fecha_hora = input("Ingrese ficha y hora de cita (formato :")
-                    fecha_hora = datetime.strptime(fecha_hora, "Y%-%m-%d %H:%M")
-                    nombre_medico = input("Ingrese nombre de medico:")
-                    tipo = input("Ingrese tipo de consulta medica:")
-                    estado = "Pendiente"
+                    try:
+                        nombre = input("Ingrese nombre del paciente:")
+                        fecha_hora = input("Ingrese ficha y hora de cita (formato AAAA-MM-DD HH:MM):")
+                        fecha_hora = datetime.strptime(fecha_hora, "Y%-%m-%d %H:%M")
+                        nombre_medico = input("Ingrese nombre de medico:")
+                        tipo = input("Ingrese tipo de consulta medica:")
+                        estado = "Pendiente"
 
-                    cita = Cita(nombre, fecha_hora, nombre_medico, tipo, estado)
-                    Lista.Agrear_cita(cita)
+                        cita = Cita(nombre, fecha_hora, nombre_medico, tipo, estado)
+                        Lista.Agrear_cita(cita)
+                    except ValueError:
+                        print("Formato de fecha incorrecto, intente de nuevo")
+                    except Exception as e:
+                        print(e)
 
                 case "2":
                     print("---ELIMINAR CITA---")
@@ -306,16 +324,21 @@ while True:
 
             match opcion:
                 case "1":
-                    print("----AGREGAR CITA---")
-                    nombre = input("Ingrese nombre del paciente:")
-                    fecha_hora = input("Ingrese ficha y hora de cita:")
-                    fecha_hora = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M")
-                    nombre_medico = input("Ingrese nombre de medico:")
-                    tipo = input("Ingrese tipo de consulta medica:")
-                    estado = "Pendiente"
+                    try:
+                        print("----AGREGAR CITA---")
+                        nombre = input("Ingrese nombre del paciente:")
+                        fecha_hora = input("Ingrese ficha y hora de cita:")
+                        fecha_hora = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M")
+                        nombre_medico = input("Ingrese nombre de medico:")
+                        tipo = input("Ingrese tipo de consulta medica:")
+                        estado = "Pendiente"
 
-                    cita = Cita(nombre, fecha_hora, nombre_medico, tipo, estado)
-                    Lista.Agrear_cita(cita)
+                        cita = Cita(nombre, fecha_hora, nombre_medico, tipo, estado)
+                        Lista.Agrear_cita(cita, -1)
+                    except ValueError:
+                        print("Formato de fecha incorrecto, intente de nuevo")
+                    except Exception as e:
+                        print(e)
 
                 case "2":
                     print("---ELIMINAR CITA---")
