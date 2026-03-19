@@ -48,38 +48,52 @@ class Agenda:
             nueva_cita.anterior = nueva_cita
             return
 
+        if self.cabeza.siguiente == self.cabeza:
+            self.cabeza.siguiente = nueva_cita
+            self.cabeza.anterior = nueva_cita
+            nueva_cita.siguiente = nueva_cita
+            nueva_cita.anterior = nueva_cita
+            print("Cita agregada.")
+            return
         ultimo = self.cabeza
 
+
         if rev and rev == -1:
-            while ultimo.anterior != self.cabeza:
+            while True:
                 diferencia = abs(ultimo.dato.fecha_hora -   nueva_fecha)
                 if diferencia < timedelta(hours=2):
                     print(f"\n[!] ERROR: Conflicto de horario.")
                     print(f"Ya existe una cita a las {ultimo.dato.fecha_hora.strftime('%H:%M')}.")
                     print("Debe haber un espacio de al menos 2 horas entre citas.")
                     return
+                if ultimo.anterior == self.cabeza:
+                    break
                 ultimo = ultimo.anterior
             nueva_cita.siguiente = ultimo
             self.cabeza.siguiente = nueva_cita
             ultimo.anterior = nueva_cita
             nueva_cita.anterior = self.cabeza
+            print("Cita agregada.")
             return
 
         self.cola = nueva_cita
 
-        while ultimo.siguiente != self.cabeza:
+        while True:
             diferencia = abs(ultimo.dato.fecha_hora - nueva_fecha)
             if diferencia < timedelta(hours=2):
                 print(f"\n[!] ERROR: Conflicto de horario.")
                 print(f"Ya existe una cita a las {ultimo.dato.fecha_hora.strftime('%H:%M')}.")
                 print("Debe haber un espacio de al menos 2 horas entre citas.")
                 return
+            if ultimo.siguiente == self.cabeza:
+                break
             ultimo = ultimo.siguiente
 
         nueva_cita.siguiente= self.cabeza
         self.cabeza.anterior = nueva_cita
         ultimo.siguiente= nueva_cita
         nueva_cita.anterior = ultimo
+        print("Cita agregada.")
 
 
     def Eliminar_cita(self, fecha_hora, ord = None):
