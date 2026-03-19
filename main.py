@@ -45,9 +45,10 @@ class Agenda:
             print("No hay citas...Agregar primera cita")
             self.cabeza =nueva_cita
             nueva_cita.siguiente = nueva_cita
+            nueva_cita.anterior = nueva_cita
             return
 
-        ultimo= self.cabeza
+        ultimo = self.cabeza
 
         if rev and rev == -1:
             while ultimo.anterior != self.cabeza:
@@ -62,6 +63,9 @@ class Agenda:
             self.cabeza.siguiente = nueva_cita
             ultimo.anterior = nueva_cita
             nueva_cita.anterior = self.cabeza
+            return
+
+        self.cola = nueva_cita
 
         while ultimo.siguiente != self.cabeza:
             diferencia = abs(ultimo.dato.fecha_hora - nueva_fecha)
@@ -83,6 +87,8 @@ class Agenda:
             print("No hay citas pendientes")
             return
 
+        fecha_hora = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M")
+
         if self.cabeza.dato.fecha_hora == fecha_hora:
             ant = self.cabeza.anterior
             nxt = self.cabeza.siguiente
@@ -90,21 +96,23 @@ class Agenda:
             ant.siguiente = self.cabeza
             self.cabeza.anterior = ant
             print("Cita eliminada")
+            return
 
         if ord and ord == -1:
             actual = self.cabeza
             found = False
-            while actual.siguiente != self.cabeza:
-                if actual.siguiente.dato.fecha_hora == fecha_hora:
+            while actual.anterior != self.cabeza:
+                if actual.anterior.dato.fecha_hora == fecha_hora:
                     found = True
                     break
-                actual = actual.siguiente
+                actual = actual.anterior
 
             if found:
-                prev = actual.siguiente
-                nxt = actual.anterior
-                prev.anterior = nxt
-                nxt.siguiente = prev
+                ant = actual.anterior
+                prev = ant.anterior
+                nxt = ant.siguiente
+                prev.siguiente = ant.siguiente
+                nxt.anterior = ant.anterior
                 print(f"cita con fecha {fecha_hora} eliminada")
                 return
             print("No se encontró cita con esa fecha")
@@ -119,10 +127,9 @@ class Agenda:
             actual = actual.siguiente
 
         if found:
-            prev = actual.anterior
             nxt = actual.siguiente
-            prev.siguiente = nxt
-            nxt.anterior = prev
+            actual.siguiente = nxt.siguiente
+            nxt.siguiente.anterior = actual
             print(f"cita con fecha {fecha_hora} eliminada")
             return
         print("No se encontró cita con esa fecha")
@@ -134,39 +141,22 @@ class Agenda:
             print("No hay citas pendientes")
             return
 
+        citas_hoy = []
         actual = self.cabeza
-        if ord and ord == -1:
-            while True:
-                c_time, hoy = None, None
-                try:
-                    hoy = datetime.today().date()
-                    c_time = datetime.strftime(actual.dato.fecha_hora, "YYYY-MM-DD")
-                except:
-                    pass
-                if c_time and hoy and c_time == hoy:
-                    print(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}", end="")
-                actual = actual.anterior
-                if actual != self.cabeza:
-                    print(end = " -> ")
-                if actual.anterior == self.cabeza.anterior:
-                    break
-            return
+        start = actual
+        is_reverse = ord == -1
 
         while True:
-            c_time, hoy = None, None
-            try:
-                hoy = datetime.today().date()
-                c_time = datetime.strftime(actual.dato.fecha_hora, "YYYY-MM-DD")
-            except:
-                pass
-            if c_time and hoy and c_time == hoy:
-                print(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}",end="")
-            actual = actual.siguiente
-            if actual != self.cabeza:
-                print(end=" -> ")
-            if actual.siguiente == self.cabeza.siguiente:
+            if actual.dato.fecha_hora.strftime("%Y-%m-%d") == datetime.today().strftime("%Y-%m-%d"):
+                citas_hoy.append(f"{actual.dato.nombre_paciente}|{actual.dato.fecha_hora}|{actual.dato.nombre_medico}|{actual.dato.estado}")
+
+            actual = actual.anterior if is_reverse else actual.siguiente
+            if actual == start:
                 break
-        return
+        if citas_hoy:
+            print(" -> ".join(reversed(citas_hoy) if is_reverse else citas_hoy))
+        else:
+            print("No hay citas hoy")
 
 
     def buscar_cita(self, crit, s_val): #crit es el criterio de búsqueda (fecha u hora), s_val es la entrada (formato YYYY-MM-DD o HH:MM)
@@ -206,7 +196,7 @@ class Agenda:
         if self.cabeza is None:
             print("No hay citas")
             return
-
+        c_time = datetime.strptime(c_time, "%Y-%m-%d %H:%M")
         actual = self.cabeza
         while True:
             if actual.dato.fecha_hora == c_time:
@@ -269,7 +259,7 @@ while True:
                     try:
                         nombre = input("Ingrese nombre del paciente:")
                         fecha_hora = input("Ingrese ficha y hora de cita (formato AAAA-MM-DD HH:MM):")
-                        fecha_hora = datetime.strptime(fecha_hora, "Y%-%m-%d %H:%M")
+                        fecha_hora = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M")
                         nombre_medico = input("Ingrese nombre de medico:")
                         tipo = input("Ingrese tipo de consulta medica:")
                         estado = "Pendiente"
