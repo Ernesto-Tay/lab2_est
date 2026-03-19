@@ -1,5 +1,4 @@
 #Agenda de Citas con Listas Enlazadas Circulares
-
 from datetime import datetime
 
 
@@ -12,11 +11,14 @@ def Menu():
 
     print("---" * 30)
 
+
+
 class Nodo:
     def __init__(self,dato):
         self.dato= dato
         self.siguiente= None
         self.anterior= None
+
 
 
 class Cita:
@@ -27,13 +29,16 @@ class Cita:
         self.tipo_consulta= tipo_consulta
         self.estado= estado
 
+
+
 class Agenda:
     def __init__(self):
         self.cabeza= None
         self.cola = None
 
-    def Agrear_cita(self,cita):
-        nueva_cita= Nodo(cita)
+
+    def Agrear_cita(self,cita, rev = None):
+        nueva_cita = Nodo(cita)
 
         if self.cabeza is None:
             print("No hay citas...Agregar primera cita")
@@ -43,11 +48,22 @@ class Agenda:
 
         ultimo= self.cabeza
 
-        while ultimo != self.cabeza:
+        if rev and rev == -1:
+            while ultimo.anterior != self.cabeza:
+                ultimo = ultimo.anterior
+            nueva_cita.siguiente = ultimo
+            self.cabeza.siguiente = nueva_cita
+            ultimo.anterior = nueva_cita
+            nueva_cita.anterior = self.cabeza
+
+        while ultimo.siguiente != self.cabeza:
             ultimo = ultimo.siguiente
 
         nueva_cita.siguiente= self.cabeza
+        self.cabeza.anterior = nueva_cita
         ultimo.siguiente= nueva_cita
+        nueva_cita.anterior = ultimo
+
 
     def Eliminar_cita(self, fecha_hora, ord = None):
         if self.cabeza is None:
@@ -55,7 +71,11 @@ class Agenda:
             return
 
         if self.cabeza.dato.fecha_hora == fecha_hora:
-            self.cabeza = None
+            ant = self.cabeza.anterior
+            nxt = self.cabeza.siguiente
+            self.cabeza = nxt
+            ant.siguiente = self.cabeza
+            self.cabeza.anterior = ant
             print("Cita eliminada")
 
         if ord and ord == -1:
@@ -94,7 +114,6 @@ class Agenda:
             return
         print("No se encontró cita con esa fecha")
         return
-
 
 
     def Mostrar_agenda(self, ord = None):
@@ -177,7 +196,7 @@ class Agenda:
 
         actual = self.cabeza
         while True:
-            if actual.dato.fecha_hora == fecha_hora:
+            if actual.dato.fecha_hora == c_time:
                 print("Cita encontrada, ingrese nuevos datos")
 
                 nombre = input("Nuevo nombre del paciente: ")
@@ -218,7 +237,6 @@ class Agenda:
 
 
 
-
 Lista= Agenda()
 while True:
     print("---SELECCIONE EL TIPO DE RECORRIDO DE LA AGENDA---")
@@ -236,7 +254,8 @@ while True:
                 case "1":
                     print("----AGREGAR CITA---")
                     nombre = input("Ingrese nombre del paciente:")
-                    fecha_hora = input("Ingrese ficha y hora de cita:")
+                    fecha_hora = input("Ingrese ficha y hora de cita (formato :")
+                    fecha_hora = datetime.strptime(fecha_hora, "Y%-%m-%d %H:%M")
                     nombre_medico = input("Ingrese nombre de medico:")
                     tipo = input("Ingrese tipo de consulta medica:")
                     estado = "Pendiente"
@@ -290,6 +309,7 @@ while True:
                     print("----AGREGAR CITA---")
                     nombre = input("Ingrese nombre del paciente:")
                     fecha_hora = input("Ingrese ficha y hora de cita:")
+                    fecha_hora = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M")
                     nombre_medico = input("Ingrese nombre de medico:")
                     tipo = input("Ingrese tipo de consulta medica:")
                     estado = "Pendiente"
